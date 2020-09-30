@@ -1,9 +1,10 @@
 ---
-title: "My Website"
+title: "Introduction to analysing microbial proteomics data in R"
 ---
 
-Hello, Website!
 
-For more information about simple R Markdown websites, please read the documentation at https://bookdown.org/yihui/rmarkdown/rmarkdown-site.html.
+This tutorial is focused towards analysing microbial proteomics data. Most of the analysis is done using the `DEP` R package created by [Arne Smits and Wolfgang Huber](https://bioconductor.org/packages/devel/bioc/vignettes/DEP/inst/doc/DEP.html]). 
+Reference: [Zhang X, Smits A, van Tilburg G, Ovaa H, Huber W, Vermeulen M (2018). “Proteome-wide identification of ubiquitin interactions using UbIA-MS.” Nature Protocols, 13, 530–550.](https://www.nature.com/articles/nprot.2017.147).  
 
-Please also note that simple R Markdown sites are _not_ based on **blogdown**. They are probably good for websites with only a few Rmd documents. For larger-scale and more sophisticated websites (such as blogs), you may want to use **blogdown** instead: https://github.com/rstudio/blogdown.
+The data structure used by DEP is [SummarizedExperiment](https://bioconductor.org/packages/release/bioc/html/SummarizedExperiment.html). 
+Contact: Sudarshan A. Shetty sudarshanshetty9[@]gmail[dot]com  
