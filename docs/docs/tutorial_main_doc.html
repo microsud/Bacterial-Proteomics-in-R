@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Sudarshan A. Shetty," />
+
+
+<title>Introduction to analysing microbial proteomics data in R</title>
+
+<script src="site_libs/jquery-1.12.4/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="site_libs/datatables-binding-0.15/datatables.js"></script>
+<link href="site_libs/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="site_libs/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="site_libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
+<link href="site_libs/crosstalk-1.1.0.1/css/crosstalk.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.1.0.1/js/crosstalk.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Comparative Proteomics</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="tutorial_main_doc.html">Home</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Introduction to analysing microbial proteomics data in R</h1>
+<h3 class="subtitle">Comparative proteomic profiling of <em>Anaerobutyricum soehngenii</em> (DSM17630)</h3>
+<h4 class="author">Sudarshan A. Shetty,</h4>
+<h4 class="date">30 September, 2020</h4>
+
+</div>
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This tutorial is focused towards analysing microbial proteomics data. Most of the analysis is done using the <code>DEP</code> R package created by <a href="https://bioconductor.org/packages/devel/bioc/vignettes/DEP/inst/doc/DEP.html%5D">Arne Smits and Wolfgang Huber</a>. Reference: <a href="https://www.nature.com/articles/nprot.2017.147">Zhang X, Smits A, van Tilburg G, Ovaa H, Huber W, Vermeulen M (2018). “Proteome-wide identification of ubiquitin interactions using UbIA-MS.” Nature Protocols, 13, 530–550.</a>.</p>
+<p>The data structure used by DEP is <a href="https://bioconductor.org/packages/release/bioc/html/SummarizedExperiment.html">SummarizedExperiment</a>.</p>
+<p>The data used in this tutorial is from <a href="https://www.biorxiv.org/content/10.1101/2020.06.09.139246v1.full">Shetty, S.A., Boeren, S., Bui, T.P.N., Smidt, H. and De Vos, W.M., 2020. Unravelling lactate-acetate conversion to butyrate by intestinal Anaerobutyricum and Anaerostipes species. bioRxiv.</a><br />
+[Source for this tutorial] <a href="https://github.com/microsud/Bacterial-Proteomics-in-R" class="uri">https://github.com/microsud/Bacterial-Proteomics-in-R</a></p>
+<p><strong>The overview of experiment: </strong><br />
+<img src="img/overview.jpg" width="75%" /></p>
+<p>We will ain to identify key proteins that are invovled on utilization of <code>lactate</code>, <code>sorbitol</code> and <code>sucrose</code>.</p>
+</div>
+<div id="initiation" class="section level1">
+<h1>Initiation</h1>
+<div id="installing-packages" class="section level2">
+<h2>Installing packages</h2>
+<pre class="r"><code>#https://bioconductor.org/packages/devel/bioc/vignettes/DEP/inst/doc/DEP.html
+#http://bioconductor.org/packages/release/bioc/vignettes/MSnbase/inst/doc/MSnbase-demo.html
+
+.cran_packages &lt;- c(&quot;ggplot2&quot;, &quot;patchwork&quot;, &quot;dplyr&quot;, &quot;ggpubr&quot;, &quot;devtools&quot;,&quot;pheatmap&quot;)
+.bioc_packages &lt;- c(&quot;SummarizedExperiment&quot;, &quot;DEP&quot;)
+.inst &lt;- .cran_packages %in% installed.packages()
+if(any(!.inst)) {
+  install.packages(.cran_packages[!.inst])
+}
+if (!requireNamespace(&quot;BiocManager&quot;, quietly = TRUE))
+  install.packages(&quot;BiocManager&quot;)
+BiocManager::install(.bioc_packages)</code></pre>
+<p><strong>Load libraries</strong></p>
+<pre class="r"><code>library(&quot;DEP&quot;)
+library(&quot;ggplot2&quot;)
+library(&quot;dplyr&quot;)
+library(&quot;pheatmap&quot;)
+library(&quot;SummarizedExperiment&quot;)
+library(&quot;ggpubr&quot;)
+library(&quot;patchwork&quot;)</code></pre>
+<p>Load the data recieved from MaxQuant.</p>
+</div>
+<div id="import-data" class="section level2">
+<h2>Import data</h2>
+<div id="peptideproteins-intensities" class="section level3">
+<h3>Peptide/Proteins intensities</h3>
+<pre class="r"><code>data &lt;- read.csv(&quot;three_carbon.csv&quot;, 
+                 header = T, 
+                 row.names = 1)</code></pre>
+<p>Check what this files consists.</p>
+<pre class="r"><code>head(data)[1:5] # this will list first 5 rows and all columns</code></pre>
+<pre><code>##                                                         Majority.protein.IDs
+## CON__sp|P00760|TRY1_BOVIN;CON__sp|P00761|TRYP_PIG  CON__sp|P00760|TRY1_BOVIN
+## CON__sp|P02533|K1C14_HUMAN                        CON__sp|P02533|K1C14_HUMAN
+## CON__sp|P02769|ALBU_BOVIN                          CON__sp|P02769|ALBU_BOVIN
+## CON__sp|P04259|K2C6B_HUMAN                        CON__sp|P04259|K2C6B_HUMAN
+## CON__sp|P04264|K2C1_HUMAN                          CON__sp|P04264|K2C1_HUMAN
+## CON__sp|P08779|K1C16_HUMAN                        CON__sp|P08779|K1C16_HUMAN
+##                                                   Peptide.counts..all.
+## CON__sp|P00760|TRY1_BOVIN;CON__sp|P00761|TRYP_PIG                 13;1
+## CON__sp|P02533|K1C14_HUMAN                                           9
+## CON__sp|P02769|ALBU_BOVIN                                            8
+## CON__sp|P04259|K2C6B_HUMAN                                          12
+## CON__sp|P04264|K2C1_HUMAN                                           38
+## CON__sp|P08779|K1C16_HUMAN                                          12
+##                                                   Peptide.counts..razor.unique.
+## CON__sp|P00760|TRY1_BOVIN;CON__sp|P00761|TRYP_PIG                          13;1
+## CON__sp|P02533|K1C14_HUMAN                                                    2
+## CON__sp|P02769|ALBU_BOVIN                                                     8
+## CON__sp|P04259|K2C6B_HUMAN                                                    7
+## CON__sp|P04264|K2C1_HUMAN                                                    38
+## CON__sp|P08779|K1C16_HUMAN                                                    8
+##                                                   Peptide.counts..unique.
+## CON__sp|P00760|TRY1_BOVIN;CON__sp|P00761|TRYP_PIG                    13;1
+## CON__sp|P02533|K1C14_HUMAN                                              2
+## CON__sp|P02769|ALBU_BOVIN                                               8
+## CON__sp|P04259|K2C6B_HUMAN                                              1
+## CON__sp|P04264|K2C1_HUMAN                                              33
+## CON__sp|P08779|K1C16_HUMAN                                              5
+##                                                   Gene.names
+## CON__sp|P00760|TRY1_BOVIN;CON__sp|P00761|TRYP_PIG           
+## CON__sp|P02533|K1C14_HUMAN                                  
+## CON__sp|P02769|ALBU_BOVIN                                   
+## CON__sp|P04259|K2C6B_HUMAN                                  
+## CON__sp|P04264|K2C1_HUMAN                                   
+## CON__sp|P08779|K1C16_HUMAN</code></pre>
+<p>Check which columns do we have in this dataset.</p>
+<pre class="r"><code>colnames(data)</code></pre>
+<pre><code>##   [1] &quot;Majority.protein.IDs&quot;                
+##   [2] &quot;Peptide.counts..all.&quot;                
+##   [3] &quot;Peptide.counts..razor.unique.&quot;       
+##   [4] &quot;Peptide.counts..unique.&quot;             
+##   [5] &quot;Gene.names&quot;                          
+##   [6] &quot;Fasta.headers&quot;                       
+##   [7] &quot;Number.of.proteins&quot;                  
+##   [8] &quot;Peptides&quot;                            
+##   [9] &quot;Razor...unique.peptides&quot;             
+##  [10] &quot;Unique.peptides&quot;                     
+##  [11] &quot;Peptides.LacA&quot;                       
+##  [12] &quot;Peptides.LacB&quot;                       
+##  [13] &quot;Peptides.LacC&quot;                       
+##  [14] &quot;Peptides.SorbA&quot;                      
+##  [15] &quot;Peptides.SorbB&quot;                      
+##  [16] &quot;Peptides.SorbC&quot;                      
+##  [17] &quot;Peptides.SucA&quot;                       
+##  [18] &quot;Peptides.SucB&quot;                       
+##  [19] &quot;Peptides.SucC&quot;                       
+##  [20] &quot;Razor...unique.peptides.LacA&quot;        
+##  [21] &quot;Razor...unique.peptides.LacB&quot;        
+##  [22] &quot;Razor...unique.peptides.LacC&quot;        
+##  [23] &quot;Razor...unique.peptides.SorbA&quot;       
+##  [24] &quot;Razor...unique.peptides.SorbB&quot;       
+##  [25] &quot;Razor...unique.peptides.SorbC&quot;       
+##  [26] &quot;Razor...unique.peptides.SucA&quot;        
+##  [27] &quot;Razor...unique.peptides.SucB&quot;        
+##  [28] &quot;Razor...unique.peptides.SucC&quot;        
+##  [29] &quot;Unique.peptides.LacA&quot;                
+##  [30] &quot;Unique.peptides.LacB&quot;                
+##  [31] &quot;Unique.peptides.LacC&quot;                
+##  [32] &quot;Unique.peptides.SorbA&quot;               
+##  [33] &quot;Unique.peptides.SorbB&quot;               
+##  [34] &quot;Unique.peptides.SorbC&quot;               
+##  [35] &quot;Unique.peptides.SucA&quot;                
+##  [36] &quot;Unique.peptides.SucB&quot;                
+##  [37] &quot;Unique.peptides.SucC&quot;                
+##  [38] &quot;Sequence.coverage....&quot;               
+##  [39] &quot;Unique...razor.sequence.coverage....&quot;
+##  [40] &quot;Unique.sequence.coverage....&quot;        
+##  [41] &quot;Mol..weight..kDa.&quot;                   
+##  [42] &quot;Sequence.length&quot;                     
+##  [43] &quot;Sequence.lengths&quot;                    
+##  [44] &quot;Fraction.average&quot;                    
+##  [45] &quot;Fraction.1&quot;                          
+##  [46] &quot;Fraction.2&quot;                          
+##  [47] &quot;Fraction.3&quot;                          
+##  [48] &quot;Q.value&quot;                             
+##  [49] &quot;Score&quot;                               
+##  [50] &quot;Identification.type.LacA&quot;            
+##  [51] &quot;Identification.type.LacB&quot;            
+##  [52] &quot;Identification.type.LacC&quot;            
+##  [53] &quot;Identification.type.SorbA&quot;           
+##  [54] &quot;Identification.type.SorbB&quot;           
+##  [55] &quot;Identification.type.SorbC&quot;           
+##  [56] &quot;Identification.type.SucA&quot;            
+##  [57] &quot;Identification.type.SucB&quot;            
+##  [58] &quot;Identification.type.SucC&quot;            
+##  [59] &quot;Sequence.coverage.LacA....&quot;          
+##  [60] &quot;Sequence.coverage.LacB....&quot;          
+##  [61] &quot;Sequence.coverage.LacC....&quot;          
+##  [62] &quot;Sequence.coverage.SorbA....&quot;         
+##  [63] &quot;Sequence.coverage.SorbB....&quot;         
+##  [64] &quot;Sequence.coverage.SorbC....&quot;         
+##  [65] &quot;Sequence.coverage.SucA....&quot;          
+##  [66] &quot;Sequence.coverage.SucB....&quot;          
+##  [67] &quot;Sequence.coverage.SucC....&quot;          
+##  [68] &quot;Intensity&quot;                           
+##  [69] &quot;Intensity.LacA&quot;                      
+##  [70] &quot;Intensity.LacB&quot;                      
+##  [71] &quot;Intensity.LacC&quot;                      
+##  [72] &quot;Intensity.SorbA&quot;                     
+##  [73] &quot;Intensity.SorbB&quot;                     
+##  [74] &quot;Intensity.SorbC&quot;                     
+##  [75] &quot;Intensity.SucA&quot;                      
+##  [76] &quot;Intensity.SucB&quot;                      
+##  [77] &quot;Intensity.SucC&quot;                      
+##  [78] &quot;iBAQ&quot;                                
+##  [79] &quot;iBAQ.LacA&quot;                           
+##  [80] &quot;iBAQ.LacB&quot;                           
+##  [81] &quot;iBAQ.LacC&quot;                           
+##  [82] &quot;iBAQ.SorbA&quot;                          
+##  [83] &quot;iBAQ.SorbB&quot;                          
+##  [84] &quot;iBAQ.SorbC&quot;                          
+##  [85] &quot;iBAQ.SucA&quot;                           
+##  [86] &quot;iBAQ.SucB&quot;                           
+##  [87] &quot;iBAQ.SucC&quot;                           
+##  [88] &quot;LFQ.intensity.LacA&quot;                  
+##  [89] &quot;LFQ.intensity.LacB&quot;                  
+##  [90] &quot;LFQ.intensity.LacC&quot;                  
+##  [91] &quot;LFQ.intensity.SorbA&quot;                 
+##  [92] &quot;LFQ.intensity.SorbB&quot;                 
+##  [93] &quot;LFQ.intensity.SorbC&quot;                 
+##  [94] &quot;LFQ.intensity.SucA&quot;                  
+##  [95] &quot;LFQ.intensity.SucB&quot;                  
+##  [96] &quot;LFQ.intensity.SucC&quot;                  
+##  [97] &quot;MS.MS.count.LacA&quot;                    
+##  [98] &quot;MS.MS.count.LacB&quot;                    
+##  [99] &quot;MS.MS.count.LacC&quot;                    
+## [100] &quot;MS.MS.count.SorbA&quot;                   
+## [101] &quot;MS.MS.count.SorbB&quot;                   
+## [102] &quot;MS.MS.count.SorbC&quot;                   
+## [103] &quot;MS.MS.count.SucA&quot;                    
+## [104] &quot;MS.MS.count.SucB&quot;                    
+## [105] &quot;MS.MS.count.SucC&quot;                    
+## [106] &quot;MS.MS.count&quot;                         
+## [107] &quot;Only.identified.by.site&quot;             
+## [108] &quot;Reverse&quot;                             
+## [109] &quot;Potential.contaminant&quot;               
+## [110] &quot;id&quot;                                  
+## [111] &quot;Peptide.IDs&quot;                         
+## [112] &quot;Peptide.is.razor&quot;                    
+## [113] &quot;Mod..peptide.IDs&quot;                    
+## [114] &quot;Evidence.IDs&quot;                        
+## [115] &quot;MS.MS.IDs&quot;                           
+## [116] &quot;Best.MS.MS&quot;                          
+## [117] &quot;Deamidation..NQ..site.IDs&quot;           
+## [118] &quot;Oxidation..M..site.IDs&quot;              
+## [119] &quot;Deamidation..NQ..site.positions&quot;     
+## [120] &quot;Oxidation..M..site.positions&quot;</code></pre>
+<p>We have 121 columns. These consists of a variaty of information.</p>
+</div>
+<div id="import-sample-information" class="section level3">
+<h3>Import sample information</h3>
+<p><strong>Note:</strong> Important to have column called <code>Condition</code></p>
+<pre class="r"><code># Read sample information
+sam_dat &lt;- read.csv(&quot;sample_data_carbon.csv&quot;, header = T,
+                    row.names = 1, check.names = F)
+rownames(sam_dat)</code></pre>
+<pre><code>## [1] &quot;LacA&quot;  &quot;LacB&quot;  &quot;LacC&quot;  &quot;SorbA&quot; &quot;SorbB&quot; &quot;SorbC&quot; &quot;SucA&quot;  &quot;SucB&quot;  &quot;SucC&quot;</code></pre>
+<p>Process the sample data to add three columns, <code>condition</code>,<code>label</code> and <code>replicate</code>.</p>
+<pre class="r"><code>experimental_design &lt;- sam_dat
+sam_dat$condition &lt;- sam_dat$Condition
+sam_dat$label &lt;- rownames(sam_dat)
+sam_dat$replicate &lt;- c(&quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;1&quot;,&quot;2&quot;,&quot;3&quot;)</code></pre>
+</div>
+</div>
+</div>
+<div id="pre-processing-and-qc" class="section level1">
+<h1>Pre-processing and QC</h1>
+<p>We first focus on two columns, <code>Reverse</code> and <code>Potential.contaminant</code>. Proteomics experiments are are sensititve to contaminants, of which commonly observed are human keratins and albumin. We need to remove these potential contaminants and decoy database hits.</p>
+<pre class="r"><code># Filter out contaminants
+data_2 &lt;- filter(data, Reverse != &quot;+&quot;, Potential.contaminant != &quot;+&quot;)
+
+# check if any duplicated protiens exists?
+data_2$Gene.names %&gt;% duplicated() %&gt;% any()</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<p>Origianlly loaded data consisted of 1000 rows and 120 cols. These included potential contaminats.</p>
+<pre class="r"><code>dim(data)</code></pre>
+<pre><code>## [1] 1000  120</code></pre>
+<p>After removing potential contaminants, we have 965 proteins.</p>
+<pre class="r"><code>dim(data_2)</code></pre>
+<pre><code>## [1] 965 120</code></pre>
+<p>Extract the columns with LFQ intesity. These are the values we want to use for our analysis.</p>
+<pre class="r"><code># extract the columns with LFQ intesity.
+LFQ_columns &lt;- grep(&quot;LFQ.&quot;, colnames(data_2)) </code></pre>
+<p>Clean up names</p>
+<pre class="r"><code>data_2$Gene.names &lt;- gsub(&quot;EHL_&quot;,&quot;EHLA_&quot;, data_2$Gene.names)
+
+data &lt;- tidyr::separate(data, Gene.names, c(&quot;Gene.names&quot;, &quot;Product name&quot;), sep = &quot; &quot;, remove = TRUE)</code></pre>
+<pre><code>## Warning: Expected 2 pieces. Missing pieces filled with `NA` in 1000 rows [1, 2,
+## 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ...].</code></pre>
+<pre class="r"><code>data_unique &lt;- make_unique(data_2, &quot;Gene.names&quot;, &quot;Fasta.headers&quot;, delim = &quot;;&quot;)</code></pre>
+<pre class="r"><code>LFQ_columns &lt;- grep(&quot;LFQ.&quot;, colnames(data_unique))</code></pre>
+<div id="make-summarizedexperiment" class="section level3">
+<h3>Make SummarizedExperiment</h3>
+<pre class="r"><code>data_se &lt;- make_se(data_unique, LFQ_columns, sam_dat)
+
+ # get LFQ column numbers
+data_se_parsed &lt;- make_se_parse(data_unique, LFQ_columns)</code></pre>
+</div>
+<div id="overlap-of-proteins" class="section level3">
+<h3>Overlap of proteins</h3>
+<p>Check for overlap of protein identifications between samples.</p>
+<pre class="r"><code>overlap &lt;- plot_frequency(data_se)
+DT::datatable(overlap$data)</code></pre>
+<p><div id="htmlwidget-c6681310c542152b8aa3" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-c6681310c542152b8aa3">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10"],["0","1","2","3","4","5","6","7","8","9"],[3,225,38,41,34,27,42,39,63,453]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Var1<\/th>\n      <th>Freq<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script> We have 225 unique protiens. While majority are detected in all 9 samples.</p>
+</div>
+<div id="filtering" class="section level3">
+<h3>Filtering</h3>
+<p>We will use a cut-off so as to have only those proteins that are detected in 2 out of three replicates for each condition.</p>
+<pre class="r"><code># Filter for proteins that are identified in all replicates of at least one condition
+#data_filt &lt;- filter_missval(data_se, thr = 0)
+
+# Less stringent filtering:
+# Filter for proteins that are identified in 2 out of 3 replicates of at least one condition
+data_filt &lt;- filter_missval(data_se, thr = 1)</code></pre>
+</div>
+<div id="number-of-protiens" class="section level3">
+<h3>Number of protiens</h3>
+<p>Check for number of identified proteins per sample</p>
+<pre class="r"><code>p.num.prot &lt;- plot_numbers(data_filt)
+
+p.num.prot &lt;- p.num.prot + geom_text(aes(label = sprintf(&quot;%.1f&quot;, sum), y= sum),  
+                                     vjust = 3) 
+p.num.prot &lt;- p.num.prot + scale_fill_manual(&quot;Carbon Source&quot;, 
+                                               values = c(&quot;#fbb4ae&quot;, 
+                                                          &quot;#b3cde3&quot;, 
+                                                          &quot;#ccebc5&quot;))
+
+print(p.num.prot)</code></pre>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+</div>
+<div id="protein-coverage" class="section level3">
+<h3>Protein coverage</h3>
+<p>Protein coverage in all samples</p>
+<pre class="r"><code>p &lt;- plot_coverage(data_filt) + scale_fill_brewer(palette = &quot;Paired&quot;)
+p &lt;- p + geom_text(aes(label=Freq), vjust=1.6, color=&quot;white&quot;)
+#ggsave(&quot;./results/Protein coverage.pdf&quot;, width = 12, height = 6)</code></pre>
+<p>Combine the two plots from above.</p>
+<pre class="r"><code>p.num.prot / p </code></pre>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-19-1.png" width="576" style="display: block; margin: auto;" /></p>
+<p>We see that there is almost even coverage in all samples.</p>
+</div>
+</div>
+<div id="normalization" class="section level1">
+<h1>Normalization</h1>
+<p>Tranformation of LFQ values to stabilize the variance before we calcualte differential abundance.</p>
+<pre class="r"><code>data_norm &lt;- normalize_vsn(data_filt)</code></pre>
+<div id="mean-vs-sd-plot" class="section level3">
+<h3>Mean vs Sd plot</h3>
+<pre class="r"><code>mds_plot &lt;- meanSdPlot(data_norm) </code></pre>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<pre class="r"><code># if you want to customize you can access the plot as shown below
+#mds_plot$gg + theme_bw() + scale_fill_distiller(palette = &quot;RdPu&quot;)</code></pre>
+</div>
+<div id="compare-raw-and-normalized-data" class="section level3">
+<h3>Compare raw and normalized data</h3>
+<pre class="r"><code>sub_cols &lt;- c(Lactate= &quot;#e63946&quot;, Sorbitol=&quot;#2a9d8f&quot;, Sucrose=&quot;#1d3557&quot;)
+
+p.norm &lt;- plot_normalization(data_filt, data_norm)
+# specify colors
+p.norm + scale_fill_manual(values = sub_cols)</code></pre>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-22-1.png" width="672" /> For this dataset we do not see “large” difference.<br />
+<a href="https://www.bioconductor.org/packages/release/bioc/vignettes/DEP/inst/doc/MissingValues.html" class="uri">https://www.bioconductor.org/packages/release/bioc/vignettes/DEP/inst/doc/MissingValues.html</a> ### Missing values<br />
+Check for missing values</p>
+<pre class="r"><code>plot_missval(data_filt)</code></pre>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p>To get an idea of how missing values are affec Plot intensity distributions and cumulative fraction of proteins with and without missing values.</p>
+<pre class="r"><code># Plot intensity distributions and cumulative fraction of proteins with and without missing values
+plot_detect(data_filt)</code></pre>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p>Seems there are proteins that are low abundant in some samples are missing in others. We will impute the missing values.</p>
+<p>Note from MSnbase-<br />
+MinProb- Performs the imputation of left-censored missing data by random draws from a Gaussian distribution centred to a minimal value. Considering an expression data matrix with n samples and p features, for each sample, the mean value of the Gaussian distribution is set to a minimal observed value in that sample. The minimal value observed is estimated as being the q-th quantile (default q = 0.01) of the observed values in that sample. The standard deviation is estimated as the median of the feature standard deviations. Note that when estimating the standard deviation of the Gaussian distribution, only the peptides/proteins which present more than 50% recorded values are considered.</p>
+<pre class="r"><code>#data_norm &lt;- normalize_vsn(data_filt)
+set.seed(2156)
+# All possible imputation methods are printed in an error, if an invalid function name is given.
+# Impute missing data using random draws from a Gaussian distribution centered around a minimal value (for MNAR)
+data_imp &lt;- impute(data_norm, fun = &quot;MinProb&quot;, q = 0.01)</code></pre>
+<pre><code>## [1] 0.6969534</code></pre>
+<pre class="r"><code># 0.6969534</code></pre>
+<pre class="r"><code># Plot intensity distributions before and after imputation
+p.imput &lt;- plot_imputation(data_norm, data_imp)
+p.imput + scale_color_manual(values = sub_cols)</code></pre>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+</div>
+</div>
+<div id="global-visualisation" class="section level1">
+<h1>Global visualisation</h1>
+<div id="pca" class="section level2">
+<h2>PCA</h2>
+<p>Use all detected proteins and do a PCA for visualizing if there is clustering of replicates and conditions.</p>
+<pre class="r"><code>p.pca &lt;- plot_pca(data_imp, x = 1, y = 2, 
+                  n = nrow(data_imp@assays), # use all detected proteins
+                  point_size = 4, label=F) + 
+  ggtitle(&quot;L2-7&quot;) + 
+  scale_color_manual(&quot;Carbon Soruce&quot;, values = sub_cols)
+p.pca</code></pre>
+<pre><code>## Warning: Use of `pca_df[[indicate[1]]]` is discouraged. Use
+## `.data[[indicate[1]]]` instead.</code></pre>
+<pre><code>## Warning: Use of `pca_df[[indicate[2]]]` is discouraged. Use
+## `.data[[indicate[2]]]` instead.</code></pre>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+</div>
+<div id="correlation" class="section level2">
+<h2>Correlation</h2>
+<div id="matrix" class="section level3">
+<h3>Matrix</h3>
+<pre class="r"><code>cor_matrix &lt;- plot_cor(data_imp, 
+                       significant = F, 
+                       lower = 0, 
+                       upper = 1, 
+                       pal = &quot;GnBu&quot;,
+                       indicate = c(&quot;condition&quot;, &quot;replicate&quot;), 
+                       plot = F)
+
+cor_matrix</code></pre>
+<pre><code>##            Lactate_1 Lactate_2 Lactate_3 Sorbitol_1 Sorbitol_2 Sorbitol_3
+## Lactate_1  1.0000000 0.9450480 0.9387531  0.7532409  0.7851102  0.7564771
+## Lactate_2  0.9450480 1.0000000 0.9465379  0.7539535  0.7679748  0.7586903
+## Lactate_3  0.9387531 0.9465379 1.0000000  0.7317767  0.7593450  0.7340239
+## Sorbitol_1 0.7532409 0.7539535 0.7317767  1.0000000  0.8971698  0.9333252
+## Sorbitol_2 0.7851102 0.7679748 0.7593450  0.8971698  1.0000000  0.9062346
+## Sorbitol_3 0.7564771 0.7586903 0.7340239  0.9333252  0.9062346  1.0000000
+## Sucrose_1  0.7728223 0.7737029 0.7504688  0.7695960  0.7820167  0.7666820
+## Sucrose_2  0.7826474 0.7888448 0.7641844  0.7992334  0.8019030  0.7981853
+## Sucrose_3  0.7806216 0.7886120 0.7686140  0.7707856  0.7880199  0.7686243
+##            Sucrose_1 Sucrose_2 Sucrose_3
+## Lactate_1  0.7728223 0.7826474 0.7806216
+## Lactate_2  0.7737029 0.7888448 0.7886120
+## Lactate_3  0.7504688 0.7641844 0.7686140
+## Sorbitol_1 0.7695960 0.7992334 0.7707856
+## Sorbitol_2 0.7820167 0.8019030 0.7880199
+## Sorbitol_3 0.7666820 0.7981853 0.7686243
+## Sucrose_1  1.0000000 0.9377800 0.9378931
+## Sucrose_2  0.9377800 1.0000000 0.9371358
+## Sucrose_3  0.9378931 0.9371358 1.0000000</code></pre>
+</div>
+<div id="plot-correlation" class="section level3">
+<h3>Plot correlation</h3>
+<p>Plot heatmap for the correlation matrix.</p>
+<pre class="r"><code>pheatmap(cor_matrix)</code></pre>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
+</div>
+</div>
+</div>
+<div id="differential-enrichment-analysis" class="section level1">
+<h1>Differential enrichment analysis</h1>
+<p>Based on linear models and empherical Bayes statistics. Uses <em>limma</em> and <em>fdrtools</em></p>
+<pre class="r"><code># Test all possible comparisons of samples
+data_diff_all_contrasts &lt;- test_diff(data_imp, type = &quot;all&quot;)</code></pre>
+<pre><code>## Tested contrasts: Lactate_vs_Sorbitol, Lactate_vs_Sucrose, Sorbitol_vs_Sucrose</code></pre>
+<div id="identifymark-significant-proteins" class="section level2">
+<h2>Identify/Mark significant proteins</h2>
+<pre class="r"><code>dep &lt;- add_rejections(data_diff_all_contrasts, alpha = 0.05, lfc = 1.5)</code></pre>
+</div>
+</div>
+<div id="visualizations" class="section level1">
+<h1>Visualizations</h1>
+<div id="plot-top-protiens" class="section level2">
+<h2>Plot top protiens</h2>
+<pre class="r"><code>plot_heatmap(dep, 
+             type = &quot;centered&quot;, 
+             kmeans = F, 
+             col_limit = 4, 
+             show_row_names = T,
+             indicate = c(&quot;condition&quot;, &quot;replicate&quot;), 
+             clustering_distance = &quot;spearman&quot;)</code></pre>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+</div>
+<div id="plot-comparisons" class="section level2">
+<h2>Plot comparisons</h2>
+<pre class="r"><code>p.heat &lt;- plot_heatmap(dep, 
+                       type = &quot;contrast&quot;, 
+                       kmeans = F, 
+                       col_limit = 4, 
+                       show_row_names = T,
+                       indicate = c(&quot;condition&quot;, &quot;replicate&quot;), 
+                       show_row_dend= T,
+                       row_dend_side = &quot;right&quot;, 
+                       width = 0.5, 
+                       gap = unit(1, &quot;mm&quot;))</code></pre>
+<pre><code>## Warning: Heatmap annotation only applicable for type = &#39;centered&#39;</code></pre>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+</div>
+<div id="plot-volcano" class="section level2">
+<h2>Plot volcano</h2>
+<pre class="r"><code>remove_grids &lt;- theme(panel.grid.major = element_blank(), 
+                      panel.grid.minor = element_blank(),
+                      panel.background = element_blank(), 
+                      axis.line = element_line(colour = &quot;black&quot;))
+
+p.Lactate_vs_Sorbitol &lt;- plot_volcano(dep, 
+                                      contrast = &quot;Lactate_vs_Sorbitol&quot;, 
+                                      label_size = 2, 
+                                      add_names = TRUE) + remove_grids 
+
+p.Lactate_vs_Sorbitol</code></pre>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
+</div>
+<div id="plot-da-proteins" class="section level2">
+<h2>Plot DA proteins</h2>
+<pre class="r"><code>key_prots &lt;- c(&quot;EHLA_0973&quot;,&quot;EHLA_0974&quot;,&quot;EHLA_0975&quot;, &quot;EHLA_0976&quot;, &quot;EHLA_0977&quot;, &quot;EHLA_0978&quot;, &quot;EHLA_0979&quot;)
+
+rep_cols &lt;- c(&quot;1&quot;=&quot;#ffc49b&quot;,&quot;2&quot;=&quot;#e05780&quot;,&quot;3&quot;=&quot;#adb6c4&quot;)
+
+plot_single(dep, 
+            proteins = key_prots, 
+            type = &quot;centered&quot;) +  
+  scale_color_manual(&quot;Replicate&quot;, values = rep_cols)</code></pre>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
+</div>
+</div>
+<div id="pathway-analysis" class="section level1">
+<h1>Pathway analysis</h1>
+<p>Get the significant results and store them as csv file.</p>
+<pre class="r"><code>data_results &lt;- get_results(dep)
+#write.csv(data_results, &quot;./results/L2_comparison_all.csv&quot;)
+# Number of significant proteins
+data_results %&gt;% filter(significant) %&gt;% nrow()</code></pre>
+<pre><code>## [1] 59</code></pre>
+<pre class="r"><code>colnames(data_results)</code></pre>
+<pre><code>##  [1] &quot;name&quot;                            &quot;ID&quot;                             
+##  [3] &quot;Lactate_vs_Sorbitol_p.val&quot;       &quot;Lactate_vs_Sucrose_p.val&quot;       
+##  [5] &quot;Sorbitol_vs_Sucrose_p.val&quot;       &quot;Lactate_vs_Sorbitol_p.adj&quot;      
+##  [7] &quot;Lactate_vs_Sucrose_p.adj&quot;        &quot;Sorbitol_vs_Sucrose_p.adj&quot;      
+##  [9] &quot;Lactate_vs_Sorbitol_significant&quot; &quot;Lactate_vs_Sucrose_significant&quot; 
+## [11] &quot;Sorbitol_vs_Sucrose_significant&quot; &quot;significant&quot;                    
+## [13] &quot;Lactate_vs_Sorbitol_ratio&quot;       &quot;Lactate_vs_Sucrose_ratio&quot;       
+## [15] &quot;Sorbitol_vs_Sucrose_ratio&quot;       &quot;Lactate_centered&quot;               
+## [17] &quot;Sorbitol_centered&quot;               &quot;Sucrose_centered&quot;</code></pre>
+<pre class="r"><code>#write.csv(data_results_sig, &quot;./results/L2_comparison_significant.csv&quot;)</code></pre>
+<p>There are a number of packages that allow for further analysis of differentially expressed proteins. An overview can be found here by <a href="http://yulab-smu.top/clusterProfiler-book/chapter12.html#pathview-from-pathview-package">Guangchuang Yu</a>. Below is only a demonstration of the possibilities. Please refer to <code>clusterProfiler-book</code> for detailed information.</p>
+<pre class="r"><code>library(clusterProfiler)</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;clusterProfiler&#39;:
+##   method                             from      
+##   as.data.frame.compareClusterResult enrichplot</code></pre>
+<pre><code>## clusterProfiler v3.17.3  For help: https://guangchuangyu.github.io/software/clusterProfiler
+## 
+## If you use clusterProfiler in published research, please cite:
+## Guangchuang Yu, Li-Gen Wang, Yanyan Han, Qing-Yu He. clusterProfiler: an R package for comparing biological themes among gene clusters. OMICS: A Journal of Integrative Biology. 2012, 16(5):284-287.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;clusterProfiler&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:DelayedArray&#39;:
+## 
+##     simplify</code></pre>
+<pre><code>## The following object is masked from &#39;package:IRanges&#39;:
+## 
+##     slice</code></pre>
+<pre><code>## The following object is masked from &#39;package:S4Vectors&#39;:
+## 
+##     rename</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter</code></pre>
+<pre class="r"><code>library(pathview)</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## ##############################################################################
+## Pathview is an open source software package distributed under GNU General
+## Public License version 3 (GPLv3). Details of GPLv3 is available at
+## http://www.gnu.org/licenses/gpl-3.0.html. Particullary, users are required to
+## formally cite the original Pathview paper (not just mention it) in publications
+## or products. For details, do citation(&quot;pathview&quot;) within R.
+## 
+## The pathview downloads and uses KEGG data. Non-academic uses may require a KEGG
+## license agreement (details at http://www.kegg.jp/kegg/legal.html).
+## ##############################################################################</code></pre>
+<pre class="r"><code>library(enrichplot)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;enrichplot&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggpubr&#39;:
+## 
+##     color_palette</code></pre>
+<pre class="r"><code>library(DOSE)</code></pre>
+<pre><code>## DOSE v3.14.0  For help: https://guangchuangyu.github.io/software/DOSE
+## 
+## If you use DOSE in published research, please cite:
+## Guangchuang Yu, Li-Gen Wang, Guang-Rong Yan, Qing-Yu He. DOSE: an R/Bioconductor package for Disease Ontology Semantic and Enrichment analysis. Bioinformatics 2015, 31(4):608-609</code></pre>
+<p>Here, we demonstrate this using DA proteins between Lactate and sorbitol growth condition.<br />
+## Prep data</p>
+<pre class="r"><code>lac_sor &lt;- data_results[, c(&quot;name&quot;,&quot;Lactate_vs_Sorbitol_significant&quot;, &quot;Lactate_vs_Sorbitol_ratio&quot;, &quot;Lactate_vs_Sorbitol_p.adj&quot;)]
+
+# keep only significant differences
+#foldchanges.1 &lt;- subset(lac_sor, Lactate_vs_Sorbitol_p.adj &lt;= 0.05)
+
+foldchanges.1 = lac_sor$Lactate_vs_Sorbitol_ratio
+names(foldchanges.1) = lac_sor$name
+
+# we use a threshold of -1.2 or + 1.2
+gene &lt;- names(foldchanges.1)[abs(foldchanges.1) &gt; 1.5]</code></pre>
+<div id="kegg-enrichment" class="section level2">
+<h2>KEGG enrichment</h2>
+<p>Identify KEGG pathways that are enriched.</p>
+<pre class="r"><code>Lac_sor_kegg &lt;- enrichKEGG(gene,
+                           organism = &#39;ehl&#39;, 
+                           pvalueCutoff = 0.05)</code></pre>
+<pre><code>## Reading KEGG annotation online:
+## 
+## Reading KEGG annotation online:</code></pre>
+<pre class="r"><code>DT::datatable(as.data.frame(Lac_sor_kegg))</code></pre>
+<div id="htmlwidget-13abeac277d234d1d734" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-13abeac277d234d1d734">{"x":{"filter":"none","data":[["ehl00640","ehl01200","ehl01120","ehl00620","ehl01100","ehl00051"],["ehl00640","ehl01200","ehl01120","ehl00620","ehl01100","ehl00051"],["Propanoate metabolism","Carbon metabolism","Microbial metabolism in diverse environments","Pyruvate metabolism","Metabolic pathways","Fructose and mannose metabolism"],["12/105","20/105","30/105","12/105","76/105","8/105"],["26/841","67/841","124/841","32/841","494/841","21/841"],[1.68242685956108e-05,6.11356692049254e-05,6.3469503904964e-05,0.000203394621960562,0.00143441398633362,0.00229403949702665],[0.000824389161184931,0.00103666856378108,0.00103666856378108,0.00249158411901689,0.0140572570660695,0.0187346558923843],[0.000690680500240866,0.000868530053436349,0.000868530053436349,0.00208747112012156,0.0117772937825287,0.0156960597164981],["EHLA_0166/EHLA_0798/EHLA_0977/EHLA_1022/EHLA_2966/EHLA_3029/EHLA_3038/EHLA_3039/EHLA_0163/EHLA_0871/EHLA_1021/EHLA_3037","EHLA_0166/EHLA_0273/EHLA_0798/EHLA_0910/EHLA_0977/EHLA_1257/EHLA_0008/EHLA_0118/EHLA_0163/EHLA_0164/EHLA_0747/EHLA_0871/EHLA_0909/EHLA_0912/EHLA_1021/EHLA_1117/EHLA_1270/EHLA_1759/EHLA_2825/EHLA_2990","EHLA_0166/EHLA_0273/EHLA_0798/EHLA_0910/EHLA_0974/EHLA_0977/EHLA_1257/EHLA_1763/EHLA_2966/EHLA_0008/EHLA_0117/EHLA_0118/EHLA_0163/EHLA_0276/EHLA_0595/EHLA_0781/EHLA_0783/EHLA_0871/EHLA_0909/EHLA_0912/EHLA_1021/EHLA_1037/EHLA_1117/EHLA_1270/EHLA_1759/EHLA_2084/EHLA_2269/EHLA_2301/EHLA_2825/EHLA_2990","EHLA_0273/EHLA_0798/EHLA_0978/EHLA_2288/EHLA_2966/EHLA_0008/EHLA_0163/EHLA_0747/EHLA_0871/EHLA_1021/EHLA_1117/EHLA_2082","EHLA_0166/EHLA_0235/EHLA_0273/EHLA_0330/EHLA_0551/EHLA_0798/EHLA_0910/EHLA_0974/EHLA_0977/EHLA_0978/EHLA_1022/EHLA_1257/EHLA_1763/EHLA_1871/EHLA_1880/EHLA_1883/EHLA_2288/EHLA_2442/EHLA_2966/EHLA_3038/EHLA_3039/EHLA_0008/EHLA_0118/EHLA_0143/EHLA_0163/EHLA_0199/EHLA_0205/EHLA_0236/EHLA_0276/EHLA_0295/EHLA_0296/EHLA_0321/EHLA_0394/EHLA_0526/EHLA_0552/EHLA_0595/EHLA_0779/EHLA_0781/EHLA_0783/EHLA_0793/EHLA_0794/EHLA_0871/EHLA_0880/EHLA_0881/EHLA_0882/EHLA_0909/EHLA_0912/EHLA_0947/EHLA_0956/EHLA_0985/EHLA_0994/EHLA_0995/EHLA_1021/EHLA_1037/EHLA_1051/EHLA_1076/EHLA_1117/EHLA_1270/EHLA_1310/EHLA_1695/EHLA_1759/EHLA_1803/EHLA_1825/EHLA_1874/EHLA_1879/EHLA_2082/EHLA_2269/EHLA_2283/EHLA_2301/EHLA_2497/EHLA_2825/EHLA_2990/EHLA_3037/EHLA_3164/EHLA_3168/EHLA_3178","EHLA_0330/EHLA_1880/EHLA_1883/EHLA_2442/EHLA_0118/EHLA_0985/EHLA_1879/EHLA_2301"],[12,20,30,12,76,8]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>ID<\/th>\n      <th>Description<\/th>\n      <th>GeneRatio<\/th>\n      <th>BgRatio<\/th>\n      <th>pvalue<\/th>\n      <th>p.adjust<\/th>\n      <th>qvalue<\/th>\n      <th>geneID<\/th>\n      <th>Count<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[5,6,7,9]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<p>Visualize enriched KEGG pathways.</p>
+<pre class="r"><code>barplot(Lac_sor_kegg, drop = F, showCategory = 12)</code></pre>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
+<pre class="r"><code>enrichplot::cnetplot(Lac_sor_kegg,categorySize = &quot;pvalue&quot;, 
+                     foldChange = foldchanges.1, colorEdge= TRUE)</code></pre>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-41-1.png" width="1344" /></p>
+<pre class="r"><code>enrichplot::emapplot(Lac_sor_kegg)</code></pre>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-42-1.png" width="672" /></p>
+<pre class="r"><code>heatplot(Lac_sor_kegg, foldChange=foldchanges.1,showCategory = 10) + ggtitle(&quot;Heatplot&quot;)</code></pre>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-43-1.png" width="1344" /></p>
+<pre class="r"><code>mkk &lt;- enrichMKEGG(gene = gene,
+                   organism = &#39;ehl&#39;,
+                   pvalueCutoff = 0.25,
+                   minGSSize = 5,
+                   qvalueCutoff = 0.25)</code></pre>
+<pre><code>## Reading KEGG annotation online:
+## 
+## Reading KEGG annotation online:</code></pre>
+<pre class="r"><code>barplot(mkk)</code></pre>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
+</div>
+<div id="kegg-metabolic-map" class="section level2">
+<h2>KEGG metabolic map</h2>
+<p>We can also view proteins that were identified in Butanoate metabolism on a KEGG metabolic map. Note: When you run <code>browseKEGG</code> it will open a new window with the default web-browser on your PC/Laptop.</p>
+<pre class="r"><code>browseKEGG(Lac_sor_kegg, &#39;ehl00650&#39;)</code></pre>
+<center>
+<img src="img/ehl00650.png" title="fig:" alt="image" />
+</center>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>## R version 4.0.2 (2020-06-22)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 18363)
+## 
+## Matrix products: default
+## 
+## locale:
+## [1] LC_COLLATE=English_Netherlands.1252  LC_CTYPE=English_Netherlands.1252   
+## [3] LC_MONETARY=English_Netherlands.1252 LC_NUMERIC=C                        
+## [5] LC_TIME=English_Netherlands.1252    
+## 
+## attached base packages:
+## [1] parallel  stats4    stats     graphics  grDevices utils     datasets 
+## [8] methods   base     
+## 
+## other attached packages:
+##  [1] DOSE_3.14.0                 enrichplot_1.9.3           
+##  [3] pathview_1.29.1             clusterProfiler_3.17.3     
+##  [5] imputeLCMD_2.0              impute_1.63.0              
+##  [7] pcaMethods_1.81.0           norm_1.0-9.5               
+##  [9] tmvtnorm_1.4-10             gmm_1.6-5                  
+## [11] sandwich_2.5-1              mvtnorm_1.1-1              
+## [13] patchwork_1.0.1             ggpubr_0.4.0               
+## [15] SummarizedExperiment_1.19.6 DelayedArray_0.15.7        
+## [17] matrixStats_0.56.0          Matrix_1.2-18              
+## [19] Biobase_2.49.1              GenomicRanges_1.41.6       
+## [21] GenomeInfoDb_1.25.11        IRanges_2.23.10            
+## [23] S4Vectors_0.27.12           BiocGenerics_0.35.4        
+## [25] pheatmap_1.0.12             dplyr_1.0.2                
+## [27] ggplot2_3.3.2               DEP_1.11.0                 
+## 
+## loaded via a namespace (and not attached):
+##   [1] shinydashboard_0.7.1   tidyselect_1.1.0       RSQLite_2.2.0         
+##   [4] AnnotationDbi_1.51.3   htmlwidgets_1.5.1      grid_4.0.2            
+##   [7] BiocParallel_1.23.2    scatterpie_0.1.5       munsell_0.5.0         
+##  [10] codetools_0.2-16       preprocessCore_1.51.0  DT_0.15               
+##  [13] withr_2.2.0            colorspace_1.4-1       GOSemSim_2.14.2       
+##  [16] knitr_1.29             ggsignif_0.6.0         mzID_1.27.0           
+##  [19] labeling_0.3           KEGGgraph_1.49.1       GenomeInfoDbData_1.2.3
+##  [22] polyclip_1.10-0        bit64_4.0.5            farver_2.0.3          
+##  [25] downloader_0.4         vctrs_0.3.4            generics_0.0.2        
+##  [28] xfun_0.17              R6_2.4.1               doParallel_1.0.15     
+##  [31] clue_0.3-57            graphlayouts_0.7.0     bitops_1.0-6          
+##  [34] fgsea_1.14.0           gridGraphics_0.5-0     assertthat_0.2.1      
+##  [37] promises_1.1.1         scales_1.1.1           ggraph_2.0.3          
+##  [40] gtable_0.3.0           affy_1.67.1            tidygraph_1.2.0       
+##  [43] rlang_0.4.7            mzR_2.23.1             GlobalOptions_0.1.2   
+##  [46] splines_4.0.2          rstatix_0.6.0          hexbin_1.28.1         
+##  [49] broom_0.7.0            BiocManager_1.30.10    yaml_2.2.1            
+##  [52] reshape2_1.4.4         abind_1.4-5            crosstalk_1.1.0.1     
+##  [55] backports_1.1.10       httpuv_1.5.4           qvalue_2.20.0         
+##  [58] tools_4.0.2            ggplotify_0.0.5        affyio_1.59.0         
+##  [61] ellipsis_0.3.1         RColorBrewer_1.1-2     MSnbase_2.15.6        
+##  [64] ggridges_0.5.2         Rcpp_1.0.5             plyr_1.8.6            
+##  [67] zlibbioc_1.35.0        purrr_0.3.4            RCurl_1.98-1.2        
+##  [70] GetoptLong_1.0.2       viridis_0.5.1          cowplot_1.1.0         
+##  [73] zoo_1.8-8              haven_2.3.1            ggrepel_0.8.2         
+##  [76] cluster_2.1.0          magrittr_1.5           data.table_1.13.0     
+##  [79] DO.db_2.9              openxlsx_4.2.2         circlize_0.4.10       
+##  [82] ggnewscale_0.4.3       ProtGenerics_1.21.0    hms_0.5.3             
+##  [85] mime_0.9               evaluate_0.14          xtable_1.8-4          
+##  [88] XML_3.99-0.5           rio_0.5.16             readxl_1.3.1          
+##  [91] gridExtra_2.3          shape_1.4.5            compiler_4.0.2        
+##  [94] tibble_3.0.3           ncdf4_1.17             crayon_1.3.4          
+##  [97] shadowtext_0.0.7       htmltools_0.5.0        later_1.1.0.1         
+## [100] tidyr_1.1.2            DBI_1.1.0              tweenr_1.0.1          
+## [103] ComplexHeatmap_2.5.5   MASS_7.3-51.6          car_3.0-9             
+## [106] readr_1.3.1            vsn_3.57.0             igraph_1.2.5          
+## [109] forcats_0.5.0          pkgconfig_2.0.3        rvcheck_0.1.8         
+## [112] foreign_0.8-80         MALDIquant_1.19.3      foreach_1.5.0         
+## [115] XVector_0.29.3         stringr_1.4.0          digest_0.6.25         
+## [118] graph_1.67.1           Biostrings_2.57.2      rmarkdown_2.3         
+## [121] cellranger_1.1.0       fastmatch_1.1-0        curl_4.3              
+## [124] shiny_1.5.0            rjson_0.2.20           lifecycle_0.2.0       
+## [127] jsonlite_1.7.1         carData_3.0-4          viridisLite_0.3.0     
+## [130] limma_3.45.14          pillar_1.4.6           lattice_0.20-41       
+## [133] httr_1.4.2             KEGGREST_1.28.0        fastmap_1.0.1         
+## [136] GO.db_3.11.4           glue_1.4.2             zip_2.1.1             
+## [139] fdrtool_1.2.15         png_0.1-7              iterators_1.0.12      
+## [142] Rgraphviz_2.33.0       bit_4.0.4              ggforce_0.3.2         
+## [145] stringi_1.5.3          blob_1.2.1             org.Hs.eg.db_3.11.4   
+## [148] memoise_1.1.0</code></pre>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,5 +1,5 @@
 ---
-title: "Introduction to analysing microbial proteomics data in R"
+title: "Introductoion to analysing microbial proteomics data in R"
 subtitle: "Comparative proteomic profiling of _Anaerobutyricum soehngenii_ (DSM17630)"
 author: "Sudarshan A. Shetty,"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
@@ -241,8 +241,10 @@ p.norm <- plot_normalization(data_filt, data_norm)
 # specify colors
 p.norm + scale_fill_manual(values = sub_cols)
 ```
+
 For this dataset we do not see "large" difference.  
-https://www.bioconductor.org/packages/release/bioc/vignettes/DEP/inst/doc/MissingValues.html
+https://www.bioconductor.org/packages/release/bioc/vignettes/DEP/inst/doc/MissingValues.html   
+
 ### Missing values  
 Check for missing values
 
@@ -354,7 +356,7 @@ plot_heatmap(dep,
 
 
 ## Plot comparisons    
-```{r}
+```{r fig.height=10}
 p.heat <- plot_heatmap(dep, 
                        type = "contrast", 
                        kmeans = F, 
