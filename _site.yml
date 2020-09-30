@@ -1,0 +1,7 @@
+name: "Introduction to analysing microbial proteomics data in R"
+navbar:
+  title: "Comparative Proteomics"
+  left:
+    - text: "Home"
+      href: tutorial_main_doc.html
+

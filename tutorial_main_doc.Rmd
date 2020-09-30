@@ -1,5 +1,5 @@
 ---
-title: "Introductoion to analysing microbial proteomics data in R"
+title: "Introduction to analysing microbial proteomics data in R"
 subtitle: "Comparative proteomic profiling of _Anaerobutyricum soehngenii_ (DSM17630)"
 author: "Sudarshan A. Shetty,"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
