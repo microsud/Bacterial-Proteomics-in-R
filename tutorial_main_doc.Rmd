@@ -1,5 +1,5 @@
 ---
-title: "Introductoion to analysing microbial proteomics data in R"
+title: "Introduction to analysing microbial proteomics data in R"
 subtitle: "Comparative proteomic profiling of _Anaerobutyricum soehngenii_ (DSM17630)"
 author: "Sudarshan A. Shetty,"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
@@ -33,7 +33,7 @@ We will ain to identify key proteins that are invovled on utilization of `lactat
 #http://bioconductor.org/packages/release/bioc/vignettes/MSnbase/inst/doc/MSnbase-demo.html
 
 .cran_packages <- c("ggplot2", "patchwork", "dplyr", "ggpubr", "devtools","pheatmap")
-.bioc_packages <- c("SummarizedExperiment", "DEP")
+.bioc_packages <- c("SummarizedExperiment", "DEP","DOSE","clusterProfiler","pathview","enrichplot")
 .inst <- .cran_packages %in% installed.packages()
 if(any(!.inst)) {
   install.packages(.cran_packages[!.inst])
@@ -199,7 +199,7 @@ print(p.num.prot)
 ```
 
 ### Protein coverage  
-Protein coverage in all samples  
+Protein coverage in all samples.    
 
 ```{r, warning=FALSE, message=FALSE, fig.height=6, fig.width=6, fig.align='center'}
 
@@ -264,7 +264,7 @@ plot_detect(data_filt)
 
 Seems there are proteins that are low abundant in some samples are missing in others. We will impute the missing values.
 
-Note from MSnbase-    
+Note from [MSnbase](http://bioconductor.org/packages/release/bioc/vignettes/MSnbase/inst/doc/MSnbase-demo.html)-    
 MinProb- Performs the imputation of left-censored missing data by random draws from a Gaussian distribution centred to a minimal value. Considering an expression data matrix with n samples and p features, for each sample, the mean value of the Gaussian distribution is set to a minimal observed value in that sample. The minimal value observed is estimated as being the q-th quantile (default q = 0.01) of the observed values in that sample. The standard deviation is estimated as the median of the feature standard deviations. Note that when estimating the standard deviation of the Gaussian distribution, only the peptides/proteins which present more than 50% recorded values are considered. 
 
 ```{r, warning=FALSE, message=FALSE}
@@ -341,7 +341,7 @@ dep <- add_rejections(data_diff_all_contrasts, alpha = 0.05, lfc = 1.5)
 # Visualizations  
 
 ## Plot top protiens  
-```{r}
+```{r fig.height=14, fig.width=8}
 
 plot_heatmap(dep, 
              type = "centered", 
@@ -356,7 +356,7 @@ plot_heatmap(dep,
 
 
 ## Plot comparisons    
-```{r fig.height=10}
+```{r fig.height=14, fig.width=8}
 p.heat <- plot_heatmap(dep, 
                        type = "contrast", 
                        kmeans = F, 
@@ -388,6 +388,9 @@ p.Lactate_vs_Sorbitol
 
 
 ## Plot DA proteins   
+
+Search for these locus tags on [KEGG genome website](https://www.genome.jp/dbget-bin/get_linkdb?-t+genes+gn:T05310)  
+
 ```{r}
 
 key_prots <- c("EHLA_0973","EHLA_0974","EHLA_0975", "EHLA_0976", "EHLA_0977", "EHLA_0978", "EHLA_0979")

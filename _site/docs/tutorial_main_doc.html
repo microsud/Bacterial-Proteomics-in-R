@@ -12,7 +12,7 @@
 <meta name="author" content="Sudarshan A. Shetty," />
 
 
-<title>Introduction to analysing microbial proteomics data in R</title>
+<title>Introductoion to analysing microbial proteomics data in R</title>
 
 <script src="site_libs/jquery-1.12.4/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -371,7 +371,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Introduction to analysing microbial proteomics data in R</h1>
+<h1 class="title toc-ignore">Introductoion to analysing microbial proteomics data in R</h1>
 <h3 class="subtitle">Comparative proteomic profiling of <em>Anaerobutyricum soehngenii</em> (DSM17630)</h3>
 <h4 class="author">Sudarshan A. Shetty,</h4>
 <h4 class="date">30 September, 2020</h4>
@@ -637,8 +637,8 @@ data_se_parsed &lt;- make_se_parse(data_unique, LFQ_columns)</code></pre>
 <p>Check for overlap of protein identifications between samples.</p>
 <pre class="r"><code>overlap &lt;- plot_frequency(data_se)
 DT::datatable(overlap$data)</code></pre>
-<p><div id="htmlwidget-c6681310c542152b8aa3" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-c6681310c542152b8aa3">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10"],["0","1","2","3","4","5","6","7","8","9"],[3,225,38,41,34,27,42,39,63,453]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Var1<\/th>\n      <th>Freq<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script> We have 225 unique protiens. While majority are detected in all 9 samples.</p>
+<p><div id="htmlwidget-e3a6e373c0d1734a3d52" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e3a6e373c0d1734a3d52">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10"],["0","1","2","3","4","5","6","7","8","9"],[3,225,38,41,34,27,42,39,63,453]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Var1<\/th>\n      <th>Freq<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script> We have 225 unique protiens. While majority are detected in all 9 samples.</p>
 </div>
 <div id="filtering" class="section level3">
 <h3>Filtering</h3>
@@ -695,9 +695,13 @@ p &lt;- p + geom_text(aes(label=Freq), vjust=1.6, color=&quot;white&quot;)
 p.norm &lt;- plot_normalization(data_filt, data_norm)
 # specify colors
 p.norm + scale_fill_manual(values = sub_cols)</code></pre>
-<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-22-1.png" width="672" /> For this dataset we do not see “large” difference.<br />
-<a href="https://www.bioconductor.org/packages/release/bioc/vignettes/DEP/inst/doc/MissingValues.html" class="uri">https://www.bioconductor.org/packages/release/bioc/vignettes/DEP/inst/doc/MissingValues.html</a> ### Missing values<br />
-Check for missing values</p>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p>For this dataset we do not see “large” difference.<br />
+<a href="https://www.bioconductor.org/packages/release/bioc/vignettes/DEP/inst/doc/MissingValues.html" class="uri">https://www.bioconductor.org/packages/release/bioc/vignettes/DEP/inst/doc/MissingValues.html</a></p>
+</div>
+<div id="missing-values" class="section level3">
+<h3>Missing values</h3>
+<p>Check for missing values</p>
 <pre class="r"><code>plot_missval(data_filt)</code></pre>
 <p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
 <p>To get an idea of how missing values are affec Plot intensity distributions and cumulative fraction of proteins with and without missing values.</p>
@@ -934,8 +938,8 @@ gene &lt;- names(foldchanges.1)[abs(foldchanges.1) &gt; 1.5]</code></pre>
 ## 
 ## Reading KEGG annotation online:</code></pre>
 <pre class="r"><code>DT::datatable(as.data.frame(Lac_sor_kegg))</code></pre>
-<div id="htmlwidget-13abeac277d234d1d734" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-13abeac277d234d1d734">{"x":{"filter":"none","data":[["ehl00640","ehl01200","ehl01120","ehl00620","ehl01100","ehl00051"],["ehl00640","ehl01200","ehl01120","ehl00620","ehl01100","ehl00051"],["Propanoate metabolism","Carbon metabolism","Microbial metabolism in diverse environments","Pyruvate metabolism","Metabolic pathways","Fructose and mannose metabolism"],["12/105","20/105","30/105","12/105","76/105","8/105"],["26/841","67/841","124/841","32/841","494/841","21/841"],[1.68242685956108e-05,6.11356692049254e-05,6.3469503904964e-05,0.000203394621960562,0.00143441398633362,0.00229403949702665],[0.000824389161184931,0.00103666856378108,0.00103666856378108,0.00249158411901689,0.0140572570660695,0.0187346558923843],[0.000690680500240866,0.000868530053436349,0.000868530053436349,0.00208747112012156,0.0117772937825287,0.0156960597164981],["EHLA_0166/EHLA_0798/EHLA_0977/EHLA_1022/EHLA_2966/EHLA_3029/EHLA_3038/EHLA_3039/EHLA_0163/EHLA_0871/EHLA_1021/EHLA_3037","EHLA_0166/EHLA_0273/EHLA_0798/EHLA_0910/EHLA_0977/EHLA_1257/EHLA_0008/EHLA_0118/EHLA_0163/EHLA_0164/EHLA_0747/EHLA_0871/EHLA_0909/EHLA_0912/EHLA_1021/EHLA_1117/EHLA_1270/EHLA_1759/EHLA_2825/EHLA_2990","EHLA_0166/EHLA_0273/EHLA_0798/EHLA_0910/EHLA_0974/EHLA_0977/EHLA_1257/EHLA_1763/EHLA_2966/EHLA_0008/EHLA_0117/EHLA_0118/EHLA_0163/EHLA_0276/EHLA_0595/EHLA_0781/EHLA_0783/EHLA_0871/EHLA_0909/EHLA_0912/EHLA_1021/EHLA_1037/EHLA_1117/EHLA_1270/EHLA_1759/EHLA_2084/EHLA_2269/EHLA_2301/EHLA_2825/EHLA_2990","EHLA_0273/EHLA_0798/EHLA_0978/EHLA_2288/EHLA_2966/EHLA_0008/EHLA_0163/EHLA_0747/EHLA_0871/EHLA_1021/EHLA_1117/EHLA_2082","EHLA_0166/EHLA_0235/EHLA_0273/EHLA_0330/EHLA_0551/EHLA_0798/EHLA_0910/EHLA_0974/EHLA_0977/EHLA_0978/EHLA_1022/EHLA_1257/EHLA_1763/EHLA_1871/EHLA_1880/EHLA_1883/EHLA_2288/EHLA_2442/EHLA_2966/EHLA_3038/EHLA_3039/EHLA_0008/EHLA_0118/EHLA_0143/EHLA_0163/EHLA_0199/EHLA_0205/EHLA_0236/EHLA_0276/EHLA_0295/EHLA_0296/EHLA_0321/EHLA_0394/EHLA_0526/EHLA_0552/EHLA_0595/EHLA_0779/EHLA_0781/EHLA_0783/EHLA_0793/EHLA_0794/EHLA_0871/EHLA_0880/EHLA_0881/EHLA_0882/EHLA_0909/EHLA_0912/EHLA_0947/EHLA_0956/EHLA_0985/EHLA_0994/EHLA_0995/EHLA_1021/EHLA_1037/EHLA_1051/EHLA_1076/EHLA_1117/EHLA_1270/EHLA_1310/EHLA_1695/EHLA_1759/EHLA_1803/EHLA_1825/EHLA_1874/EHLA_1879/EHLA_2082/EHLA_2269/EHLA_2283/EHLA_2301/EHLA_2497/EHLA_2825/EHLA_2990/EHLA_3037/EHLA_3164/EHLA_3168/EHLA_3178","EHLA_0330/EHLA_1880/EHLA_1883/EHLA_2442/EHLA_0118/EHLA_0985/EHLA_1879/EHLA_2301"],[12,20,30,12,76,8]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>ID<\/th>\n      <th>Description<\/th>\n      <th>GeneRatio<\/th>\n      <th>BgRatio<\/th>\n      <th>pvalue<\/th>\n      <th>p.adjust<\/th>\n      <th>qvalue<\/th>\n      <th>geneID<\/th>\n      <th>Count<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[5,6,7,9]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-0b8085aea0b56dd60f43" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-0b8085aea0b56dd60f43">{"x":{"filter":"none","data":[["ehl00640","ehl01200","ehl01120","ehl00620","ehl01100","ehl00051"],["ehl00640","ehl01200","ehl01120","ehl00620","ehl01100","ehl00051"],["Propanoate metabolism","Carbon metabolism","Microbial metabolism in diverse environments","Pyruvate metabolism","Metabolic pathways","Fructose and mannose metabolism"],["12/105","20/105","30/105","12/105","76/105","8/105"],["26/841","67/841","124/841","32/841","494/841","21/841"],[1.68242685956108e-05,6.11356692049254e-05,6.3469503904964e-05,0.000203394621960562,0.00143441398633362,0.00229403949702665],[0.000824389161184931,0.00103666856378108,0.00103666856378108,0.00249158411901689,0.0140572570660695,0.0187346558923843],[0.000690680500240866,0.000868530053436349,0.000868530053436349,0.00208747112012156,0.0117772937825287,0.0156960597164981],["EHLA_0166/EHLA_0798/EHLA_0977/EHLA_1022/EHLA_2966/EHLA_3029/EHLA_3038/EHLA_3039/EHLA_0163/EHLA_0871/EHLA_1021/EHLA_3037","EHLA_0166/EHLA_0273/EHLA_0798/EHLA_0910/EHLA_0977/EHLA_1257/EHLA_0008/EHLA_0118/EHLA_0163/EHLA_0164/EHLA_0747/EHLA_0871/EHLA_0909/EHLA_0912/EHLA_1021/EHLA_1117/EHLA_1270/EHLA_1759/EHLA_2825/EHLA_2990","EHLA_0166/EHLA_0273/EHLA_0798/EHLA_0910/EHLA_0974/EHLA_0977/EHLA_1257/EHLA_1763/EHLA_2966/EHLA_0008/EHLA_0117/EHLA_0118/EHLA_0163/EHLA_0276/EHLA_0595/EHLA_0781/EHLA_0783/EHLA_0871/EHLA_0909/EHLA_0912/EHLA_1021/EHLA_1037/EHLA_1117/EHLA_1270/EHLA_1759/EHLA_2084/EHLA_2269/EHLA_2301/EHLA_2825/EHLA_2990","EHLA_0273/EHLA_0798/EHLA_0978/EHLA_2288/EHLA_2966/EHLA_0008/EHLA_0163/EHLA_0747/EHLA_0871/EHLA_1021/EHLA_1117/EHLA_2082","EHLA_0166/EHLA_0235/EHLA_0273/EHLA_0330/EHLA_0551/EHLA_0798/EHLA_0910/EHLA_0974/EHLA_0977/EHLA_0978/EHLA_1022/EHLA_1257/EHLA_1763/EHLA_1871/EHLA_1880/EHLA_1883/EHLA_2288/EHLA_2442/EHLA_2966/EHLA_3038/EHLA_3039/EHLA_0008/EHLA_0118/EHLA_0143/EHLA_0163/EHLA_0199/EHLA_0205/EHLA_0236/EHLA_0276/EHLA_0295/EHLA_0296/EHLA_0321/EHLA_0394/EHLA_0526/EHLA_0552/EHLA_0595/EHLA_0779/EHLA_0781/EHLA_0783/EHLA_0793/EHLA_0794/EHLA_0871/EHLA_0880/EHLA_0881/EHLA_0882/EHLA_0909/EHLA_0912/EHLA_0947/EHLA_0956/EHLA_0985/EHLA_0994/EHLA_0995/EHLA_1021/EHLA_1037/EHLA_1051/EHLA_1076/EHLA_1117/EHLA_1270/EHLA_1310/EHLA_1695/EHLA_1759/EHLA_1803/EHLA_1825/EHLA_1874/EHLA_1879/EHLA_2082/EHLA_2269/EHLA_2283/EHLA_2301/EHLA_2497/EHLA_2825/EHLA_2990/EHLA_3037/EHLA_3164/EHLA_3168/EHLA_3178","EHLA_0330/EHLA_1880/EHLA_1883/EHLA_2442/EHLA_0118/EHLA_0985/EHLA_1879/EHLA_2301"],[12,20,30,12,76,8]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>ID<\/th>\n      <th>Description<\/th>\n      <th>GeneRatio<\/th>\n      <th>BgRatio<\/th>\n      <th>pvalue<\/th>\n      <th>p.adjust<\/th>\n      <th>qvalue<\/th>\n      <th>geneID<\/th>\n      <th>Count<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[5,6,7,9]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p>Visualize enriched KEGG pathways.</p>
 <pre class="r"><code>barplot(Lac_sor_kegg, drop = F, showCategory = 12)</code></pre>
 <p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>

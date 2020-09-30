@@ -12,7 +12,7 @@
 <meta name="author" content="Sudarshan A. Shetty," />
 
 
-<title>Introductoion to analysing microbial proteomics data in R</title>
+<title>Introduction to analysing microbial proteomics data in R</title>
 
 <script src="site_libs/jquery-1.12.4/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -371,7 +371,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Introductoion to analysing microbial proteomics data in R</h1>
+<h1 class="title toc-ignore">Introduction to analysing microbial proteomics data in R</h1>
 <h3 class="subtitle">Comparative proteomic profiling of <em>Anaerobutyricum soehngenii</em> (DSM17630)</h3>
 <h4 class="author">Sudarshan A. Shetty,</h4>
 <h4 class="date">30 September, 2020</h4>
@@ -397,7 +397,7 @@ div.tocify {
 #http://bioconductor.org/packages/release/bioc/vignettes/MSnbase/inst/doc/MSnbase-demo.html
 
 .cran_packages &lt;- c(&quot;ggplot2&quot;, &quot;patchwork&quot;, &quot;dplyr&quot;, &quot;ggpubr&quot;, &quot;devtools&quot;,&quot;pheatmap&quot;)
-.bioc_packages &lt;- c(&quot;SummarizedExperiment&quot;, &quot;DEP&quot;)
+.bioc_packages &lt;- c(&quot;SummarizedExperiment&quot;, &quot;DEP&quot;,&quot;DOSE&quot;,&quot;clusterProfiler&quot;,&quot;pathview&quot;,&quot;enrichplot&quot;)
 .inst &lt;- .cran_packages %in% installed.packages()
 if(any(!.inst)) {
   install.packages(.cran_packages[!.inst])
@@ -637,8 +637,8 @@ data_se_parsed &lt;- make_se_parse(data_unique, LFQ_columns)</code></pre>
 <p>Check for overlap of protein identifications between samples.</p>
 <pre class="r"><code>overlap &lt;- plot_frequency(data_se)
 DT::datatable(overlap$data)</code></pre>
-<p><div id="htmlwidget-e3a6e373c0d1734a3d52" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-e3a6e373c0d1734a3d52">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10"],["0","1","2","3","4","5","6","7","8","9"],[3,225,38,41,34,27,42,39,63,453]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Var1<\/th>\n      <th>Freq<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script> We have 225 unique protiens. While majority are detected in all 9 samples.</p>
+<p><div id="htmlwidget-7cfa68ef8562153821e1" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-7cfa68ef8562153821e1">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10"],["0","1","2","3","4","5","6","7","8","9"],[3,225,38,41,34,27,42,39,63,453]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Var1<\/th>\n      <th>Freq<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script> We have 225 unique protiens. While majority are detected in all 9 samples.</p>
 </div>
 <div id="filtering" class="section level3">
 <h3>Filtering</h3>
@@ -667,7 +667,7 @@ print(p.num.prot)</code></pre>
 </div>
 <div id="protein-coverage" class="section level3">
 <h3>Protein coverage</h3>
-<p>Protein coverage in all samples</p>
+<p>Protein coverage in all samples.</p>
 <pre class="r"><code>p &lt;- plot_coverage(data_filt) + scale_fill_brewer(palette = &quot;Paired&quot;)
 p &lt;- p + geom_text(aes(label=Freq), vjust=1.6, color=&quot;white&quot;)
 #ggsave(&quot;./results/Protein coverage.pdf&quot;, width = 12, height = 6)</code></pre>
@@ -709,7 +709,7 @@ p.norm + scale_fill_manual(values = sub_cols)</code></pre>
 plot_detect(data_filt)</code></pre>
 <p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
 <p>Seems there are proteins that are low abundant in some samples are missing in others. We will impute the missing values.</p>
-<p>Note from MSnbase-<br />
+<p>Note from <a href="http://bioconductor.org/packages/release/bioc/vignettes/MSnbase/inst/doc/MSnbase-demo.html">MSnbase</a>-<br />
 MinProb- Performs the imputation of left-censored missing data by random draws from a Gaussian distribution centred to a minimal value. Considering an expression data matrix with n samples and p features, for each sample, the mean value of the Gaussian distribution is set to a minimal observed value in that sample. The minimal value observed is estimated as being the q-th quantile (default q = 0.01) of the observed values in that sample. The standard deviation is estimated as the median of the feature standard deviations. Note that when estimating the standard deviation of the Gaussian distribution, only the peptides/proteins which present more than 50% recorded values are considered.</p>
 <pre class="r"><code>#data_norm &lt;- normalize_vsn(data_filt)
 set.seed(2156)
@@ -805,7 +805,7 @@ data_diff_all_contrasts &lt;- test_diff(data_imp, type = &quot;all&quot;)</code>
              show_row_names = T,
              indicate = c(&quot;condition&quot;, &quot;replicate&quot;), 
              clustering_distance = &quot;spearman&quot;)</code></pre>
-<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-32-1.png" width="768" /></p>
 </div>
 <div id="plot-comparisons" class="section level2">
 <h2>Plot comparisons</h2>
@@ -820,7 +820,7 @@ data_diff_all_contrasts &lt;- test_diff(data_imp, type = &quot;all&quot;)</code>
                        width = 0.5, 
                        gap = unit(1, &quot;mm&quot;))</code></pre>
 <pre><code>## Warning: Heatmap annotation only applicable for type = &#39;centered&#39;</code></pre>
-<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+<p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-33-1.png" width="768" /></p>
 </div>
 <div id="plot-volcano" class="section level2">
 <h2>Plot volcano</h2>
@@ -839,6 +839,7 @@ p.Lactate_vs_Sorbitol</code></pre>
 </div>
 <div id="plot-da-proteins" class="section level2">
 <h2>Plot DA proteins</h2>
+<p>Search for these locus tags on <a href="https://www.genome.jp/dbget-bin/get_linkdb?-t+genes+gn:T05310">KEGG genome website</a></p>
 <pre class="r"><code>key_prots &lt;- c(&quot;EHLA_0973&quot;,&quot;EHLA_0974&quot;,&quot;EHLA_0975&quot;, &quot;EHLA_0976&quot;, &quot;EHLA_0977&quot;, &quot;EHLA_0978&quot;, &quot;EHLA_0979&quot;)
 
 rep_cols &lt;- c(&quot;1&quot;=&quot;#ffc49b&quot;,&quot;2&quot;=&quot;#e05780&quot;,&quot;3&quot;=&quot;#adb6c4&quot;)
@@ -938,8 +939,8 @@ gene &lt;- names(foldchanges.1)[abs(foldchanges.1) &gt; 1.5]</code></pre>
 ## 
 ## Reading KEGG annotation online:</code></pre>
 <pre class="r"><code>DT::datatable(as.data.frame(Lac_sor_kegg))</code></pre>
-<div id="htmlwidget-0b8085aea0b56dd60f43" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-0b8085aea0b56dd60f43">{"x":{"filter":"none","data":[["ehl00640","ehl01200","ehl01120","ehl00620","ehl01100","ehl00051"],["ehl00640","ehl01200","ehl01120","ehl00620","ehl01100","ehl00051"],["Propanoate metabolism","Carbon metabolism","Microbial metabolism in diverse environments","Pyruvate metabolism","Metabolic pathways","Fructose and mannose metabolism"],["12/105","20/105","30/105","12/105","76/105","8/105"],["26/841","67/841","124/841","32/841","494/841","21/841"],[1.68242685956108e-05,6.11356692049254e-05,6.3469503904964e-05,0.000203394621960562,0.00143441398633362,0.00229403949702665],[0.000824389161184931,0.00103666856378108,0.00103666856378108,0.00249158411901689,0.0140572570660695,0.0187346558923843],[0.000690680500240866,0.000868530053436349,0.000868530053436349,0.00208747112012156,0.0117772937825287,0.0156960597164981],["EHLA_0166/EHLA_0798/EHLA_0977/EHLA_1022/EHLA_2966/EHLA_3029/EHLA_3038/EHLA_3039/EHLA_0163/EHLA_0871/EHLA_1021/EHLA_3037","EHLA_0166/EHLA_0273/EHLA_0798/EHLA_0910/EHLA_0977/EHLA_1257/EHLA_0008/EHLA_0118/EHLA_0163/EHLA_0164/EHLA_0747/EHLA_0871/EHLA_0909/EHLA_0912/EHLA_1021/EHLA_1117/EHLA_1270/EHLA_1759/EHLA_2825/EHLA_2990","EHLA_0166/EHLA_0273/EHLA_0798/EHLA_0910/EHLA_0974/EHLA_0977/EHLA_1257/EHLA_1763/EHLA_2966/EHLA_0008/EHLA_0117/EHLA_0118/EHLA_0163/EHLA_0276/EHLA_0595/EHLA_0781/EHLA_0783/EHLA_0871/EHLA_0909/EHLA_0912/EHLA_1021/EHLA_1037/EHLA_1117/EHLA_1270/EHLA_1759/EHLA_2084/EHLA_2269/EHLA_2301/EHLA_2825/EHLA_2990","EHLA_0273/EHLA_0798/EHLA_0978/EHLA_2288/EHLA_2966/EHLA_0008/EHLA_0163/EHLA_0747/EHLA_0871/EHLA_1021/EHLA_1117/EHLA_2082","EHLA_0166/EHLA_0235/EHLA_0273/EHLA_0330/EHLA_0551/EHLA_0798/EHLA_0910/EHLA_0974/EHLA_0977/EHLA_0978/EHLA_1022/EHLA_1257/EHLA_1763/EHLA_1871/EHLA_1880/EHLA_1883/EHLA_2288/EHLA_2442/EHLA_2966/EHLA_3038/EHLA_3039/EHLA_0008/EHLA_0118/EHLA_0143/EHLA_0163/EHLA_0199/EHLA_0205/EHLA_0236/EHLA_0276/EHLA_0295/EHLA_0296/EHLA_0321/EHLA_0394/EHLA_0526/EHLA_0552/EHLA_0595/EHLA_0779/EHLA_0781/EHLA_0783/EHLA_0793/EHLA_0794/EHLA_0871/EHLA_0880/EHLA_0881/EHLA_0882/EHLA_0909/EHLA_0912/EHLA_0947/EHLA_0956/EHLA_0985/EHLA_0994/EHLA_0995/EHLA_1021/EHLA_1037/EHLA_1051/EHLA_1076/EHLA_1117/EHLA_1270/EHLA_1310/EHLA_1695/EHLA_1759/EHLA_1803/EHLA_1825/EHLA_1874/EHLA_1879/EHLA_2082/EHLA_2269/EHLA_2283/EHLA_2301/EHLA_2497/EHLA_2825/EHLA_2990/EHLA_3037/EHLA_3164/EHLA_3168/EHLA_3178","EHLA_0330/EHLA_1880/EHLA_1883/EHLA_2442/EHLA_0118/EHLA_0985/EHLA_1879/EHLA_2301"],[12,20,30,12,76,8]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>ID<\/th>\n      <th>Description<\/th>\n      <th>GeneRatio<\/th>\n      <th>BgRatio<\/th>\n      <th>pvalue<\/th>\n      <th>p.adjust<\/th>\n      <th>qvalue<\/th>\n      <th>geneID<\/th>\n      <th>Count<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[5,6,7,9]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-084f526794b3043f5c2b" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-084f526794b3043f5c2b">{"x":{"filter":"none","data":[["ehl00640","ehl01200","ehl01120","ehl00620","ehl01100","ehl00051"],["ehl00640","ehl01200","ehl01120","ehl00620","ehl01100","ehl00051"],["Propanoate metabolism","Carbon metabolism","Microbial metabolism in diverse environments","Pyruvate metabolism","Metabolic pathways","Fructose and mannose metabolism"],["12/105","20/105","30/105","12/105","76/105","8/105"],["26/841","67/841","124/841","32/841","494/841","21/841"],[1.68242685956108e-05,6.11356692049254e-05,6.3469503904964e-05,0.000203394621960562,0.00143441398633362,0.00229403949702665],[0.000824389161184931,0.00103666856378108,0.00103666856378108,0.00249158411901689,0.0140572570660695,0.0187346558923843],[0.000690680500240866,0.000868530053436349,0.000868530053436349,0.00208747112012156,0.0117772937825287,0.0156960597164981],["EHLA_0166/EHLA_0798/EHLA_0977/EHLA_1022/EHLA_2966/EHLA_3029/EHLA_3038/EHLA_3039/EHLA_0163/EHLA_0871/EHLA_1021/EHLA_3037","EHLA_0166/EHLA_0273/EHLA_0798/EHLA_0910/EHLA_0977/EHLA_1257/EHLA_0008/EHLA_0118/EHLA_0163/EHLA_0164/EHLA_0747/EHLA_0871/EHLA_0909/EHLA_0912/EHLA_1021/EHLA_1117/EHLA_1270/EHLA_1759/EHLA_2825/EHLA_2990","EHLA_0166/EHLA_0273/EHLA_0798/EHLA_0910/EHLA_0974/EHLA_0977/EHLA_1257/EHLA_1763/EHLA_2966/EHLA_0008/EHLA_0117/EHLA_0118/EHLA_0163/EHLA_0276/EHLA_0595/EHLA_0781/EHLA_0783/EHLA_0871/EHLA_0909/EHLA_0912/EHLA_1021/EHLA_1037/EHLA_1117/EHLA_1270/EHLA_1759/EHLA_2084/EHLA_2269/EHLA_2301/EHLA_2825/EHLA_2990","EHLA_0273/EHLA_0798/EHLA_0978/EHLA_2288/EHLA_2966/EHLA_0008/EHLA_0163/EHLA_0747/EHLA_0871/EHLA_1021/EHLA_1117/EHLA_2082","EHLA_0166/EHLA_0235/EHLA_0273/EHLA_0330/EHLA_0551/EHLA_0798/EHLA_0910/EHLA_0974/EHLA_0977/EHLA_0978/EHLA_1022/EHLA_1257/EHLA_1763/EHLA_1871/EHLA_1880/EHLA_1883/EHLA_2288/EHLA_2442/EHLA_2966/EHLA_3038/EHLA_3039/EHLA_0008/EHLA_0118/EHLA_0143/EHLA_0163/EHLA_0199/EHLA_0205/EHLA_0236/EHLA_0276/EHLA_0295/EHLA_0296/EHLA_0321/EHLA_0394/EHLA_0526/EHLA_0552/EHLA_0595/EHLA_0779/EHLA_0781/EHLA_0783/EHLA_0793/EHLA_0794/EHLA_0871/EHLA_0880/EHLA_0881/EHLA_0882/EHLA_0909/EHLA_0912/EHLA_0947/EHLA_0956/EHLA_0985/EHLA_0994/EHLA_0995/EHLA_1021/EHLA_1037/EHLA_1051/EHLA_1076/EHLA_1117/EHLA_1270/EHLA_1310/EHLA_1695/EHLA_1759/EHLA_1803/EHLA_1825/EHLA_1874/EHLA_1879/EHLA_2082/EHLA_2269/EHLA_2283/EHLA_2301/EHLA_2497/EHLA_2825/EHLA_2990/EHLA_3037/EHLA_3164/EHLA_3168/EHLA_3178","EHLA_0330/EHLA_1880/EHLA_1883/EHLA_2442/EHLA_0118/EHLA_0985/EHLA_1879/EHLA_2301"],[12,20,30,12,76,8]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>ID<\/th>\n      <th>Description<\/th>\n      <th>GeneRatio<\/th>\n      <th>BgRatio<\/th>\n      <th>pvalue<\/th>\n      <th>p.adjust<\/th>\n      <th>qvalue<\/th>\n      <th>geneID<\/th>\n      <th>Count<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[5,6,7,9]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p>Visualize enriched KEGG pathways.</p>
 <pre class="r"><code>barplot(Lac_sor_kegg, drop = F, showCategory = 12)</code></pre>
 <p><img src="tutorial_main_doc_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
